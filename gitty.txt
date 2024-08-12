@@ -1,0 +1,286 @@
+import tkinter as tk
+from tkinter import font, messagebox, Checkbutton, IntVar
+from PIL import Image, ImageTk
+import sqlite3
+
+# Set up the database
+conn = sqlite3.connect("fusion_bazaarrrrrr.db")
+cursor = conn.cursor()
+cursor.execute('''CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    first_name TEXT NOT NULL,
+                    last_name TEXT NOT NULL,
+                    phone_number TEXT NOT NULL,
+                    password TEXT NOT NULL,
+                    email TEXT NOT NULL UNIQUE)''')
+conn.commit()
+
+# Function to save user details during sign-up
+def save_user_details(first_name, last_name, phone_number, password, email):
+    # Simple validation
+    if not first_name or not last_name or not phone_number or not password or not email:
+        messagebox.showerror("Error", "All fields are required")
+        return False
+
+    if password != confirm_password_entry.get():
+        messagebox.showerror("Error", "Passwords do not match")
+        return False
+
+    if not terms_var.get():
+        messagebox.showerror("Error", "You must agree to the terms and conditions")
+        return False
+
+    # Save the details in the database
+    try:
+        cursor.execute("INSERT INTO users (first_name, last_name, phone_number, password, email) VALUES (?, ?, ?, ?, ?)",
+                       (first_name, last_name, phone_number, password, email))
+        conn.commit()
+        messagebox.showinfo("Success", "Account created successfully!")
+        return True
+    except sqlite3.IntegrityError:
+        messagebox.showerror("Error", "Email already exists")
+        return False
+
+# Function to handle sign-up button click
+def sign_up():
+    first_name = first_name_entry.get()
+    last_name = last_name_entry.get()
+    phone_number = phone_number_entry.get()
+    password = password_entry.get()
+    email = email_entry.get()
+
+    if save_user_details(first_name, last_name, phone_number, password, email):
+        switch_to_login()
+
+# Function to switch to login page
+def switch_to_login():
+    for widget in root.winfo_children():
+        widget.destroy()
+    login_window()
+
+# Function to handle login
+def login():
+    phone_email = phone_email_entry.get()
+    password = password_entry.get()
+
+    if not phone_email or not password:
+        messagebox.showerror("Error", "All fields are required")
+        return
+
+    # Check if the user exists
+    cursor.execute("SELECT first_name FROM users WHERE (phone_number=? OR email=?) AND password=?",
+                   (phone_email, phone_email, password))
+    user = cursor.fetchone()
+    if user:
+        messagebox.showinfo("Success", f"Welcome, {user[0]}!")
+        show_dashboard()  # Transition to the dashboard page
+    else:
+        messagebox.showerror("Error", "Credentials do not match")
+
+
+# Create the login window
+def login_window():
+    root.title("Fusion Bazaar (Login)")
+    
+    # Custom fonts
+    title_font = font.Font(family="Helvetica", size=16, weight="bold")
+    button_font = font.Font(family="Helvetica", size=10, weight="bold")
+    
+    # Load and resize the image
+    image = Image.open(r"C:\Users\Acer\Downloads\pic (1).png")
+    image = image.resize((600, 500), Image.LANCZOS)
+    photo = ImageTk.PhotoImage(image)
+    
+    # Image label
+    image_label = tk.Label(root, image=photo)
+    image_label.photo = photo  # Prevent garbage collection
+    image_label.pack(side="left", padx=20, pady=20)
+    
+    # Right frame for login form
+    right_frame = tk.Frame(root)
+    right_frame.pack(side="right", padx=20, pady=20)
+    
+    # Title
+    title = tk.Label(right_frame, text="Welcome to FUSION BAZAAR! Please login.", font=title_font)
+    title.grid(row=0, column=0, columnspan=2, pady=10)
+    
+    # Phone Number / Email label and entry
+    global phone_email_entry, password_entry
+    phone_email_label = tk.Label(right_frame, text="Phone Number / Email:")
+    phone_email_label.grid(row=1, column=0, sticky="e", pady=5)
+    phone_email_entry = tk.Entry(right_frame, width=30)
+    phone_email_entry.grid(row=1, column=1, pady=5)
+    
+    # Password label and entry
+    password_label = tk.Label(right_frame, text="Password:")
+    password_label.grid(row=2, column=0, sticky="e", pady=5)
+    password_entry = tk.Entry(right_frame, show='*', width=30)
+    password_entry.grid(row=2, column=1, pady=5)
+    
+    # Forgot Password link
+    forgot_password_link = tk.Label(right_frame, text="Forgot Password?", fg="blue", cursor="hand2")
+    forgot_password_link.grid(row=3, column=1, sticky="w", pady=5)
+    forgot_password_link.bind("<Button-1>", lambda e: print("Forgot Password Clicked"))
+    
+    # Login button
+    login_button = tk.Button(right_frame, text="LOGIN", font=button_font, command=login, bg="#d0a9f5")
+    login_button.grid(row=4, column=0, columnspan=2, pady=10)
+    
+    # Sign-up link
+    sign_up_label = tk.Label(right_frame, text="Don't have an Account?", fg="black")
+    sign_up_label.grid(row=5, column=0, pady=5)
+    sign_up_link = tk.Label(right_frame, text="Sign up", fg="orange", cursor="hand2")
+    sign_up_link.grid(row=5, column=1, sticky="w", pady=5)
+    sign_up_link.bind("<Button-1>", lambda e: switch_to_signup())
+
+# Function to switch to sign-up page
+def switch_to_signup():
+    for widget in root.winfo_children():
+        widget.destroy()
+    sign_up_window()
+
+# Main window (Sign-up)
+def sign_up_window():
+    root.title("Fusion Bazaar (Sign up)")
+
+    # Custom fonts
+    title_font = font.Font(family="Helvetica", size=16, weight="bold")
+    button_font = font.Font(family="Helvetica", size=10, weight="bold")
+
+    # Load and resize the image
+    image = Image.open(r"C:\Users\Acer\Downloads\pic2.png")
+    image = image.resize((600, 500), Image.LANCZOS)
+    photo = ImageTk.PhotoImage(image)
+
+    # Image label
+    image_label = tk.Label(root, image=photo)
+    image_label.photo = photo  # Prevent garbage collection
+    image_label.pack(side="left", padx=20, pady=20)
+
+    # Right frame for sign-up form
+    right_frame = tk.Frame(root)
+    right_frame.pack(side="right", padx=20, pady=20)
+
+    # Title
+    title = tk.Label(right_frame, text="Create Your Account Here", font=title_font)
+    title.grid(row=0, column=0, columnspan=2, pady=10)
+
+    # First name label and entry
+    global first_name_entry, last_name_entry, phone_number_entry, password_entry, confirm_password_entry, email_entry, terms_var
+    first_name_label = tk.Label(right_frame, text="First name")
+    first_name_label.grid(row=1, column=0, sticky="e", pady=5)
+    first_name_entry = tk.Entry(right_frame, width=30)
+    first_name_entry.grid(row=1, column=1, pady=5)
+
+    # Last name label and entry
+    last_name_label = tk.Label(right_frame, text="Last Name")
+    last_name_label.grid(row=2, column=0, sticky="e", pady=5)
+    last_name_entry = tk.Entry(right_frame, width=30)
+    last_name_entry.grid(row=2, column=1, pady=5)
+
+    # Phone Number label and entry
+    phone_number_label = tk.Label(right_frame, text="Phone Number")
+    phone_number_label.grid(row=3, column=0, sticky="e", pady=5)
+    phone_number_entry = tk.Entry(right_frame, width=30)
+    phone_number_entry.grid(row=3, column=1, pady=5)
+
+    # Password label and entry
+    password_label = tk.Label(right_frame, text="Password")
+    password_label.grid(row=4, column=0, sticky="e", pady=5)
+    password_entry = tk.Entry(right_frame, show='*', width=30)
+    password_entry.grid(row=4, column=1, pady=5)
+
+    # Confirm Password label and entry
+    confirm_password_label = tk.Label(right_frame, text="Confirm Password")
+    confirm_password_label.grid(row=5, column=0, sticky="e", pady=5)
+    confirm_password_entry = tk.Entry(right_frame, show='*', width=30)
+    confirm_password_entry.grid(row=5, column=1, pady=5)
+
+    # Email label and entry
+    email_label = tk.Label(right_frame, text="Email")
+    email_label.grid(row=6, column=0, sticky="e", pady=5)
+    email_entry = tk.Entry(right_frame, width=30)
+    email_entry.grid(row=6, column=1, pady=5)
+
+    # Terms and conditions checkbox
+    terms_var = IntVar()
+    terms_check = Checkbutton(right_frame, text="I agree to Fusion Bazaar Term's and conditions and privacy Policy.", variable=terms_var)
+    terms_check.grid(row=7, column=0, columnspan=2, pady=5)
+
+    # Sign-up button
+    signup_button = tk.Button(right_frame, text="SIGN UP", font=button_font, command=sign_up, bg="#d0a9f5")
+    signup_button.grid(row=8, column=0, columnspan=2, pady=10)
+
+    # Login link
+    login_label = tk.Label(right_frame, text="Already have an account?", fg="black")
+    login_label.grid(row=9, column=0, pady=5)
+    login_link = tk.Label(right_frame, text="Login", fg="orange", cursor="hand2")
+    login_link.grid(row=9, column=1, sticky="w", pady=5)
+    login_link.bind("<Button-1>", lambda e: switch_to_login())
+
+def show_dashboard():
+    # Clear the current window
+    for widget in root.winfo_children():
+        widget.destroy()
+
+    # Setup the dashboard page
+    root.title("Fusion Bazaar (Dashboard)")
+    root.geometry("1024x768")
+
+    # Create a frame for the search bar with a purple background
+    e = tk.Entry(root, width=200, bg='darkorchid4', font=("Arial", 25))
+    e.pack()
+
+    # Search Label
+    e1 = tk.Label(e, text='search', width=30, font=("Arial", 12))
+    e1.place(x=600, y=8)
+
+    # # Category title
+    # categories = tk.Label(root, text='Categories', font=('Arial Bold', 15))
+    # categories.place(x=80, y=110)
+
+    # Image and label placement
+    images_info = [
+    {"path": r"C:\Users\Acer\Downloads\image (9).jpg", "x": 100, "y": 100, "text": 'Paracetamol-Rs 30', "text_x": 120, "text_y": 250},
+    {"path": r"C:\Users\Acer\Downloads\image (11).jpg", "x": 400, "y": 100, "text": 'Hooded Jacket-Rs.2,000', "text_x": 420, "text_y": 250},
+    {"path": r"C:\Users\Acer\Downloads\image (12).jpg", "x": 700, "y": 100, "text": 'Apple watch-Rs.80,000', "text_x": 720, "text_y": 250},
+    {"path": r"C:\Users\Acer\Downloads\image (13).jpg", "x": 100, "y": 350, "text": 'Gloves-Rs 30', "text_x": 120, "text_y": 500},
+    {"path": r"C:\Users\Acer\Downloads\image (14).jpg", "x": 400, "y": 350, "text": 'Fresh mix vegetable-Rs 350', "text_x": 420, "text_y": 500},
+    {"path": r"C:\Users\Acer\Downloads\image (15).jpg", "x": 700, "y": 350, "text": 'Blender-Rs.2,000', "text_x": 720, "text_y": 500},
+    {"path": r"C:\Users\Acer\Downloads\image (5).png", "x": 100, "y": 600, "text": 'Samsung Zfold-Rs.1,50,000', "text_x": 120, "text_y": 750},
+    {"path": r"C:\Users\Acer\Downloads\image (16).jpg", "x": 400, "y": 600, "text": 'Multiplug-Rs.1,100', "text_x": 420, "text_y": 750},
+]
+
+
+    # Store image references to avoid garbage collection
+    root.image_references = []
+    for image_info in images_info:
+        image = Image.open(image_info["path"])
+        resized_image = image.resize((200, 150))
+        converted_image = ImageTk.PhotoImage(resized_image)
+        root.image_references.append(converted_image) 
+        tk.Label(root, image=converted_image).place(x=image_info["x"], y=image_info["y"])
+        tk.Label(root, text=image_info["text"], font=('Arial', 12)).place(x=image_info["text_x"], y=image_info["text_y"])
+
+    # # Category titles
+    # f = tk.Label(root, text="Fashion", font=('Arial Bold', 11))
+    # f.place(x=80, y=200)
+
+    # ed = tk.Label(root, text="Electronic Devices", font=('Arial Bold', 11))
+    # ed.place(x=80, y=235)
+
+    # gp = tk.Label(root, text="Groceries", font=('Arial Bold', 11))
+    # gp.place(x=80, y=270)
+
+# Initialize the root window and display the sign-up window by default
+root = tk.Tk()
+root.attributes('-fullscreen', True)  # Make the window full screen
+root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))  # Allow exiting full screen with Esc key
+
+sign_up_window()  # or login_window() based on what should be shown first
+root.mainloop()
+
+root.geometry("1200x700")
+root.resizable(False, False)
+sign_up_window()  # or login_window() based on what should be shown first
+root.mainloop()
