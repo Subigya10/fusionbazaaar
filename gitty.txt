@@ -218,6 +218,13 @@ def sign_up_window():
     login_link.grid(row=9, column=1, sticky="w", pady=5)
     login_link.bind("<Button-1>", lambda e: switch_to_login())
 
+# Modified show_dashboard function
+cart = []
+
+def add_to_cart(item_info):
+    cart.append(item_info)
+    messagebox.showinfo("Cart", f"{item_info['title']} added to cart!")
+
 def show_dashboard():
     # Clear the current window
     for widget in root.winfo_children():
@@ -227,60 +234,236 @@ def show_dashboard():
     root.title("Fusion Bazaar (Dashboard)")
     root.geometry("1024x768")
 
-    # Create a frame for the search bar with a purple background
+    # Create a frame for the search bar
     e = tk.Entry(root, width=200, bg='darkorchid4', font=("Arial", 25))
     e.pack()
 
-    # Search Label
     e1 = tk.Label(e, text='search', width=30, font=("Arial", 12))
     e1.place(x=600, y=8)
 
-    # # Category title
-    # categories = tk.Label(root, text='Categories', font=('Arial Bold', 15))
-    # categories.place(x=80, y=110)
+    cart_button = tk.Button(root, text="Cart", font=("Helvetica", 12, "bold"), bg="purple", fg="white", command=open_cart)
+    cart_button.place(x=700, y=700)
 
-    # Image and label placement
     images_info = [
-    {"path": r"C:\Users\Acer\Downloads\image (9).jpg", "x": 100, "y": 100, "text": 'Paracetamol-Rs 30', "text_x": 120, "text_y": 250},
-    {"path": r"C:\Users\Acer\Downloads\image (11).jpg", "x": 400, "y": 100, "text": 'Hooded Jacket-Rs.2,000', "text_x": 420, "text_y": 250},
-    {"path": r"C:\Users\Acer\Downloads\image (12).jpg", "x": 700, "y": 100, "text": 'Apple watch-Rs.80,000', "text_x": 720, "text_y": 250},
-    {"path": r"C:\Users\Acer\Downloads\image (13).jpg", "x": 100, "y": 350, "text": 'Gloves-Rs 30', "text_x": 120, "text_y": 500},
-    {"path": r"C:\Users\Acer\Downloads\image (14).jpg", "x": 400, "y": 350, "text": 'Fresh mix vegetable-Rs 350', "text_x": 420, "text_y": 500},
-    {"path": r"C:\Users\Acer\Downloads\image (15).jpg", "x": 700, "y": 350, "text": 'Blender-Rs.2,000', "text_x": 720, "text_y": 500},
-    {"path": r"C:\Users\Acer\Downloads\image (5).png", "x": 100, "y": 600, "text": 'Samsung Zfold-Rs.1,50,000', "text_x": 120, "text_y": 750},
-    {"path": r"C:\Users\Acer\Downloads\image (16).jpg", "x": 400, "y": 600, "text": 'Multiplug-Rs.1,100', "text_x": 420, "text_y": 750},
-]
+        {"image_path": r"C:\Users\Acer\Downloads\image (9).jpg", "title": "Paracetamol", "price": "Rs 30", "description": "Effective pain reliever and fever reducer."},
+        {"image_path": r"C:\Users\Acer\Downloads\image (11).jpg", "title": "Hooded Jacket", "price": "Rs 2,000", "description": "Stylish and warm jacket for winter."},
+        {"image_path": r"C:\Users\Acer\Downloads\image (12).jpg", "title": "Apple Watch", "price": "Rs 80,000", "description": "Smartwatch with advanced health features."},
+        {"image_path": r"C:\Users\Acer\Downloads\image (13).jpg", "title": "Gloves", "price": "Rs 30", "description": "Durable gloves for daily use."},
+        {"image_path": r"C:\Users\Acer\Downloads\image (14).jpg", "title": "Fresh Mix Vegetable", "price": "Rs 350", "description": "Healthy and fresh mixed vegetables."},
+        {"image_path": r"C:\Users\Acer\Downloads\image (15).jpg", "title": "Blender", "price": "Rs 2,000", "description": "High-speed blender for smooth blends."},
+        {"image_path": r"C:\Users\Acer\Downloads\image (5).png", "title": "Samsung Zfold", "price": "Rs 1,50,000", "description": "Folding smartphone with advanced features."},
+        {"image_path": r"C:\Users\Acer\Downloads\image (16).jpg", "title": "Multiplug", "price": "Rs 1,100", "description": "Convenient multiplug for multiple devices."}
+    ]
 
+    # Define position mapping
+    position_mapping = {
+        "Apple Watch": (100, 200),
+        "Samsung Zfold": (1200, 100),
+        "Hooded Jacket": (600, 100),
+        "Blender": (300, 400),
+        "Gloves": (1000, 400),
+        "Multiplug": (800, 600),
+        "Fresh Mix Vegetable": (500, 300),
+        "Paracetamol": (200, 600)
+    }
 
-    # Store image references to avoid garbage collection
+   
     root.image_references = []
-    for image_info in images_info:
-        image = Image.open(image_info["path"])
+    for idx, image_info in enumerate(images_info):
+        image = Image.open(image_info["image_path"])
         resized_image = image.resize((200, 150))
         converted_image = ImageTk.PhotoImage(resized_image)
-        root.image_references.append(converted_image) 
-        tk.Label(root, image=converted_image).place(x=image_info["x"], y=image_info["y"])
-        tk.Label(root, text=image_info["text"], font=('Arial', 12)).place(x=image_info["text_x"], y=image_info["text_y"])
+        root.image_references.append(converted_image)
 
-    # # Category titles
-    # f = tk.Label(root, text="Fashion", font=('Arial Bold', 11))
-    # f.place(x=80, y=200)
+        # Get coordinates from the position mapping
+        x, y = position_mapping.get(image_info["title"], (100 + (idx % 3) * 300, 100 + (idx // 3) * 250))
 
-    # ed = tk.Label(root, text="Electronic Devices", font=('Arial Bold', 11))
-    # ed.place(x=80, y=235)
+        # Create image label
+        img_label = tk.Label(root, image=converted_image, cursor="hand2")
+        img_label.place(x=x, y=y)
 
-    # gp = tk.Label(root, text="Groceries", font=('Arial Bold', 11))
-    # gp.place(x=80, y=270)
+        # Debugging: print the coordinates to verify
+        print(f"Placing '{image_info['title']}' at ({x}, {y})")
 
-# Initialize the root window and display the sign-up window by default
+        # Bind click event
+        img_label.bind("<Button-1>", lambda e, info=image_info: open_product_page(info))
+
+        # Add text below the image
+        text_label = tk.Label(root, text=f"{image_info['title']}\n{image_info['price']}", font=('Arial', 12))
+        text_label.place(x=x + 20, y=y + 160)  # Adjust x and y to position text below the image
+
+# Function to open product page
+def open_product_page(product_info):
+    product_window = tk.Toplevel(root)
+    product_window.title("Fusion Bazaar - Product Page")
+    product_window.geometry("1200x800")
+    product_window.configure(bg="#f0f0f0")
+
+    # Custom fonts
+    title_font = font.Font(family="Helvetica", size=24, weight="bold")
+    price_font = font.Font(family="Helvetica", size=18)
+    description_font = font.Font(family="Helvetica", size=10)
+    button_font = font.Font(family="Helvetica", size=12, weight="bold")
+
+    # Back Button
+    back_button = tk.Button(product_window, text="← Back", font=description_font, bg="#f0f0f0", fg="purple", borderwidth=0, command=product_window.destroy)
+    back_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+
+    # Load and display the product image
+    product_image = Image.open(product_info["image_path"])
+    product_image = product_image.resize((300, 300), Image.LANCZOS)
+    product_image_tk = ImageTk.PhotoImage(product_image)
+
+    product_image_label = tk.Label(product_window, image=product_image_tk, bg="#f0f0f0")
+    product_image_label.grid(row=1, column=0, rowspan=3, padx=20, pady=10)
+    product_image_label.image = product_image_tk  # Keep a reference
+
+    # Product Title
+    title_label = tk.Label(product_window, text=product_info["title"], font=title_font, bg="#f0f0f0", fg="black")
+    title_label.grid(row=1, column=1, sticky="w")
+
+    # Price
+    price_label = tk.Label(product_window, text=product_info["price"], font=price_font, bg="#f0f0f0", fg="black")
+    price_label.grid(row=2, column=1, sticky="w")
+
+    # Product Description
+    description_label = tk.Label(product_window, text=product_info["description"], font=description_font, bg="#f0f0f0", fg="black", justify="left", wraplength=500)
+    description_label.grid(row=3, column=1, padx=20, pady=10, sticky="w")
+
+    # Add to Cart and Shop buttons
+    button_frame = tk.Frame(product_window, bg="#f0f0f0")
+    button_frame.grid(row=4, column=1, padx=20, pady=20, sticky="w")
+
+    add_to_cart_button = tk.Button(button_frame, text="Add to Cart", font=button_font, bg="purple", fg="white", width=12, command=lambda: add_to_cart(product_info))
+    add_to_cart_button.grid(row=0, column=0, padx=5)
+
+    shop_button = tk.Button(button_frame, text="Shop", font=button_font, bg="purple", fg="white", width=12, command=open_payment_page)
+    shop_button.grid(row=0, column=1, padx=5)
+
+    # Delivery and Service Section
+    delivery_frame = tk.Frame(product_window, bg="#f0f0f0")
+    delivery_frame.grid(row=1, column=2, rowspan=3, padx=20, pady=10, sticky="nw")
+
+    delivery_label = tk.Label(delivery_frame, text="Delivery\n- Free standard shipping\n- Expedited shipping available\n- Pick up in store options",
+                              font=description_font, bg="#f0f0f0", fg="black", justify="left")
+    delivery_label.pack(anchor="w")
+
+    service_label = tk.Label(delivery_frame, text="Service\n\n15 days free & easy return\nChange of mind is not applicable\n\nWarranty not available",
+                             font=description_font, bg="#f0f0f0", fg="black", justify="left")
+    service_label.pack(anchor="w", pady=20)
+
+def open_cart():
+    cart_window = tk.Toplevel(root)
+    cart_window.title("Fusion Bazaar - Your Cart")
+    cart_window.geometry("800x600")
+    cart_window.configure(bg="#f0f0f0")
+
+    cart_label = tk.Label(cart_window, text="Your Cart", font=("Helvetica", 24, "bold"), bg="#f0f0f0", fg="black")
+    cart_label.pack(pady=10)
+
+    if not cart:
+        empty_label = tk.Label(cart_window, text="Your cart is empty.", font=("Helvetica", 16), bg="#f0f0f0", fg="black")
+        empty_label.pack(pady=20)
+    else:
+        for item in cart:
+            item_frame = tk.Frame(cart_window, bg="#f0f0f0")
+            item_frame.pack(pady=5, padx=10, fill="x")
+
+            image = Image.open(item["image_path"])
+            resized_image = image.resize((100, 75))
+            converted_image = ImageTk.PhotoImage(resized_image)
+
+            image_label = tk.Label(item_frame, image=converted_image, bg="#f0f0f0")
+            image_label.image = converted_image
+            image_label.pack(side="left")
+
+            text_label = tk.Label(item_frame, text=f"{item['title']}\n{item['price']}", font=("Helvetica", 14), bg="#f0f0f0", fg="black")
+            text_label.pack(side="left", padx=10)
+
+            remove_button = tk.Button(item_frame, text="Remove", command=lambda item=item: remove_from_cart(item))
+            remove_button.pack(side="right")
+
+def remove_from_cart(item):
+    if item in cart:
+        cart.remove(item)
+        open_cart()  # Refresh the cart window
+    
+def open_payment_page():
+    payment_window = tk.Toplevel(root)
+    payment_window.title("Fusion Bazaar - Payment")
+    payment_window.geometry("800x400")
+    payment_window.configure(bg="#f0f0f0")
+
+    # Custom fonts
+    title_font = font.Font(family="Helvetica", size=24, weight="bold")
+    label_font = font.Font(family="Helvetica", size=14)
+    button_font = font.Font(family="Helvetica", size=12, weight="bold")
+
+    # Title
+    title_label = tk.Label(payment_window, text="Payment Details", font=title_font, bg="#f0f0f0", fg="black")
+    title_label.pack(pady=10)
+
+    # Create a frame for the payment form
+    form_frame = tk.Frame(payment_window, bg="#f0f0f0")
+    form_frame.pack(side="left", padx=20, pady=20, fill="both", expand=True)
+
+ 
+    banking_label = tk.Label(form_frame, font=label_font, bg="#f0f0f0", fg="black")
+    banking_label.grid(row=0, column=0, sticky="e", pady=5)
+    banking_check = tk.Checkbutton(form_frame, text="Online Banking",font=40, bg="#f0f0f0")
+    banking_check.grid(row=0, column=1, pady=5)
+
+    
+    esewaa_label = tk.Label(form_frame, font=label_font, bg="#f0f0f0", fg="black")
+    esewaa_label.grid(row=1, column=0, sticky="e", pady=5)
+    esewaa_check = tk.Checkbutton(form_frame, text="Esewa",font=40, bg="#f0f0f0")
+    esewaa_check.grid(row=1, column=1, pady=5)
+
+   
+    khaltee_label = tk.Label(form_frame, font=label_font, bg="#f0f0f0", fg="black")
+    khaltee_label.grid(row=2, column=0, sticky="e", pady=5)
+    khaltee_check = tk.Checkbutton(form_frame, text="Khalti",font=40 ,bg="#f0f0f0")
+    khaltee_check.grid(row=2, column=1, pady=5)
+
+   
+    cid_label = tk.Label(form_frame, font=label_font, bg="#f0f0f0", fg="black")
+    cid_label.grid(row=3, column=0, sticky="e", pady=5)
+    cid_check = tk.Checkbutton(form_frame, text="cash in hand",font=40, bg="#f0f0f0")
+    cid_check.grid(row=3, column=1, pady=5)
+
+
+    # Payment Button
+    pay_button = tk.Button(payment_window, text="Pay Now", font=button_font, bg="purple", fg="white", command=process_payment)
+    pay_button.pack(pady=20)
+
+    # Create a frame for the QR code or scan option
+    qr_frame = tk.Frame(payment_window, bg="#f0f0f0")
+    qr_frame.pack(side="right", padx=20, pady=20, fill="both", expand=True)
+
+    # Load and display QR code image (placeholder)
+    qr_image = Image.open(r"C:\Users\Acer\Desktop\weeki.jpg")  # Update this path to your QR code image
+    qr_image = qr_image.resize((150, 150), Image.LANCZOS)
+    qr_image_tk = ImageTk.PhotoImage(qr_image)
+    qr_image_label = tk.Label(qr_frame, image=qr_image_tk, bg="#f0f0f0")
+    qr_image_label.pack()
+
+    # Keep a reference to the QR image to prevent garbage collection
+    qr_image_label.image = qr_image_tk
+
+def process_payment():
+    # Example payment processing (placeholder function)
+    messagebox.showinfo("Payment", "Payment processed successfully!")
+    # You can add further logic here to handle the payment process and update the order status
+
+
+
+
+
+
+# Initialize and start the application
 root = tk.Tk()
-root.attributes('-fullscreen', True)  # Make the window full screen
-root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))  # Allow exiting full screen with Esc key
+root.attributes('-fullscreen', True)  
+root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))  
 
-sign_up_window()  # or login_window() based on what should be shown first
-root.mainloop()
-
-root.geometry("1200x700")
-root.resizable(False, False)
-sign_up_window()  # or login_window() based on what should be shown first
-root.mainloop()
+sign_up_window() 
+root.mainllop()
