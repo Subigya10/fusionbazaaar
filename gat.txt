@@ -460,10 +460,3 @@ def process_payment():
 
 
 
-# Initialize and start the application
-root = tk.Tk()
-root.attributes('-fullscreen', True)  
-root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))  
-
-sign_up_window() 
-root.mainllop()
