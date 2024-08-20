@@ -216,4 +216,4 @@ login_link.grid(row=9, column=1, sticky="w", pady=5)
 login_link.bind("<Button-1>", lambda e: switch_to_login())
 
 # Run the main event loop
-root.mainloop()
+root.mainloop(
