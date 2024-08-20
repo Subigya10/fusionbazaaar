@@ -7,12 +7,12 @@ import sqlite3
 conn = sqlite3.connect("fusion_bazaarrrrrr.db")
 cursor = conn.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    first_name TEXT NOT NULL,
-                    last_name TEXT NOT NULL,
-                    phone_number TEXT NOT NULL,
-                    password TEXT NOT NULL,
-                    email TEXT NOT NULL UNIQUE)''')
+                    
+                    first_name TEXT ,
+                    last_name TEXT ,
+                    phone_number TEXT ,
+                    password TEXT ,
+                    email TEXT )''')
 conn.commit()
 
 # Function to save user details during sign-up
@@ -69,7 +69,7 @@ def login():
 
     # Check if the user exists
     cursor.execute("SELECT first_name FROM users WHERE (phone_number=? OR email=?) AND password=?",
-                   (phone_email, phone_email, password))
+                   (phone_email_entry.get(), phone_email_entry.get(), password_entry.get()))
     user = cursor.fetchone()
     if user:
         messagebox.showinfo("Success", f"Welcome, {user[0]}!")
@@ -387,7 +387,107 @@ def remove_from_cart(item):
     if item in cart:
         cart.remove(item)
         open_cart()  # Refresh the cart window
-    
+
+
+
+def process_save(province, city, zone, address):
+    if not province or not city or not zone or not address:
+        messagebox.showwarning("Input Error", "All fields are required!")
+    else:
+        # Example payment processing (placeholder function)
+        messagebox.showinfo("Payment", "Payment processed successfully!")
+        # Add further logic here to handle the payment process and update the order status
+
+def open_shipping_page():
+    shipping_window = tk.Toplevel(root)
+    shipping_window.title("Fusion Bazaar - Shipping Details")
+    shipping_window.geometry("400x250")
+    shipping_window.configure(bg="#f0f0f0")
+
+    # Custom fonts
+    title_font = font.Font(family="Helvetica", size=20, weight="bold")
+    label_font = font.Font(family="Helvetica", size=12)
+    button_font = font.Font(family="Helvetica", size=10, weight="bold")
+
+    # Title
+    title_label = tk.Label(shipping_window, text="Shipping details", font=title_font, bg="#f0f0f0", fg="gray")
+    title_label.pack(pady=10)
+
+    # Create a frame for the shipping form
+    form_frame = tk.Frame(shipping_window, bg="#f0f0f0")
+    form_frame.pack(padx=20, pady=10, fill="both", expand=True)
+
+    # Labels and entries
+    tk.Label(form_frame, text="Province", font=label_font, bg="#f0f0f0").grid(row=0, column=0, sticky="w", pady=5)
+    tk.Entry(form_frame, font=label_font).grid(row=0, column=1, pady=5)
+
+    tk.Label(form_frame, text="City", font=label_font, bg="#f0f0f0").grid(row=1, column=0, sticky="w", pady=5)
+    tk.Entry(form_frame, font=label_font).grid(row=1, column=1, pady=5)
+
+    tk.Label(form_frame, text="Zone", font=label_font, bg="#f0f0f0").grid(row=2, column=0, sticky="w", pady=5)
+    tk.Entry(form_frame, font=label_font).grid(row=2, column=1, pady=5)
+
+    tk.Label(form_frame, text="Address", font=label_font, bg="#f0f0f0").grid(row=3, column=0, sticky="w", pady=5)
+    tk.Entry(form_frame, font=label_font).grid(row=3, column=1, pady=5)
+
+    # Save button
+    save_button = tk.Button(shipping_window, text="Save", font=button_font, bg="purple", fg="white",command=process_save)
+    save_button.pack(pady=10)
+
+
+
+def process_save(province, city, zone, address):
+    if not province or not city or not zone or not address:
+        messagebox.showwarning("Input Error", "All fields are required!")
+    else:
+        # Example payment processing (placeholder function)
+        messagebox.showinfo("Payment", "Payment processed successfully!")
+        # Add further logic here to handle the payment process and update the order status
+
+def open_shipping_page():
+    shipping_window = tk.Toplevel(root)
+    shipping_window.title("Fusion Bazaar - Shipping Details")
+    shipping_window.geometry("400x250")
+    shipping_window.configure(bg="#f0f0f0")
+
+    # Custom fonts
+    title_font = font.Font(family="Helvetica", size=20, weight="bold")
+    label_font = font.Font(family="Helvetica", size=12)
+    button_font = font.Font(family="Helvetica", size=10, weight="bold")
+
+    # Title
+    title_label = tk.Label(shipping_window, text="Shipping details", font=title_font, bg="#f0f0f0", fg="gray")
+    title_label.pack(pady=10)
+
+    # Create a frame for the shipping form
+    form_frame = tk.Frame(shipping_window, bg="#f0f0f0")
+    form_frame.pack(padx=20, pady=10, fill="both", expand=True)
+
+    # Labels and entries
+    tk.Label(form_frame, text="Province", font=label_font, bg="#f0f0f0").grid(row=0, column=0, sticky="w", pady=5)
+    province_entry = tk.Entry(form_frame, font=label_font)
+    province_entry.grid(row=0, column=1, pady=5)
+
+    tk.Label(form_frame, text="City", font=label_font, bg="#f0f0f0").grid(row=1, column=0, sticky="w", pady=5)
+    city_entry = tk.Entry(form_frame, font=label_font)
+    city_entry.grid(row=1, column=1, pady=5)
+
+    tk.Label(form_frame, text="Zone", font=label_font, bg="#f0f0f0").grid(row=2, column=0, sticky="w", pady=5)
+    zone_entry = tk.Entry(form_frame, font=label_font)
+    zone_entry.grid(row=2, column=1, pady=5)
+
+    tk.Label(form_frame, text="Address", font=label_font, bg="#f0f0f0").grid(row=3, column=0, sticky="w", pady=5)
+    address_entry = tk.Entry(form_frame, font=label_font)
+    address_entry.grid(row=3, column=1, pady=5)
+
+    # Save button with validation
+    save_button = tk.Button(shipping_window, text="Save", font=button_font, bg="purple", fg="white",
+                            command=lambda: process_save(province_entry.get(), city_entry.get(), zone_entry.get(), address_entry.get()))
+    save_button.pack(pady=10)
+
+def shipping_page_and_process_payment():
+    open_shipping_page()
+
 def open_payment_page():
     payment_window = tk.Toplevel(root)
     payment_window.title("Fusion Bazaar - Payment")
@@ -407,38 +507,33 @@ def open_payment_page():
     form_frame = tk.Frame(payment_window, bg="#f0f0f0")
     form_frame.pack(side="left", padx=20, pady=20, fill="both", expand=True)
 
- 
     banking_label = tk.Label(form_frame, font=label_font, bg="#f0f0f0", fg="black")
     banking_label.grid(row=0, column=0, sticky="e", pady=5)
-    banking_check = tk.Checkbutton(form_frame, text="Online Banking",font=40, bg="#f0f0f0")
+    banking_check = tk.Checkbutton(form_frame, text="Online Banking", font=40, bg="#f0f0f0")
     banking_check.grid(row=0, column=1, pady=5)
 
-    
     esewaa_label = tk.Label(form_frame, font=label_font, bg="#f0f0f0", fg="black")
     esewaa_label.grid(row=1, column=0, sticky="e", pady=5)
-    esewaa_check = tk.Checkbutton(form_frame, text="Esewa",font=40, bg="#f0f0f0")
+    esewaa_check = tk.Checkbutton(form_frame, text="Esewa", font=40, bg="#f0f0f0")
     esewaa_check.grid(row=1, column=1, pady=5)
 
-   
     khaltee_label = tk.Label(form_frame, font=label_font, bg="#f0f0f0", fg="black")
     khaltee_label.grid(row=2, column=0, sticky="e", pady=5)
-    khaltee_check = tk.Checkbutton(form_frame, text="Khalti",font=40 ,bg="#f0f0f0")
+    khaltee_check = tk.Checkbutton(form_frame, text="Khalti", font=40, bg="#f0f0f0")
     khaltee_check.grid(row=2, column=1, pady=5)
 
-   
     cid_label = tk.Label(form_frame, font=label_font, bg="#f0f0f0", fg="black")
     cid_label.grid(row=3, column=0, sticky="e", pady=5)
-    cid_check = tk.Checkbutton(form_frame, text="cash in hand",font=40, bg="#f0f0f0")
+    cid_check = tk.Checkbutton(form_frame, text="Cash in hand", font=40, bg="#f0f0f0")
     cid_check.grid(row=3, column=1, pady=5)
 
-
     # Payment Button
-    pay_button = tk.Button(payment_window, text="Pay Now", font=button_font, bg="purple", fg="white", command=process_payment)
+    pay_button = tk.Button(payment_window, text="Pay Now", font=button_font, bg="purple", fg="white", command=shipping_page_and_process_payment)
     pay_button.pack(pady=20)
 
     # Create a frame for the QR code or scan option
     qr_frame = tk.Frame(payment_window, bg="#f0f0f0")
-    qr_frame.pack(side="right", padx=20, pady=20, fill="both", expand=True)
+    qr_frame.pack(side="right", padx=10, pady=10, fill="both", expand=True)
 
     # Load and display QR code image (placeholder)
     qr_image = Image.open(r"C:\Users\Acer\Desktop\weeki.jpg")  # Update this path to your QR code image
@@ -450,20 +545,10 @@ def open_payment_page():
     # Keep a reference to the QR image to prevent garbage collection
     qr_image_label.image = qr_image_tk
 
-def process_payment():
-    # Example payment processing (placeholder function)
-    messagebox.showinfo("Payment", "Payment processed successfully!")
-    # You can add further logic here to handle the payment process and update the order status
-
-
-
-
-
-
 # Initialize and start the application
 root = tk.Tk()
-root.attributes('-fullscreen', True)  
-root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))  
+root.attributes('-fullscreen', True)
+root.bind("<Escape>", lambda event: root.attributes("-fullscreen", False))
 
-sign_up_window() 
+sign_up_window()
 root.mainloop()
